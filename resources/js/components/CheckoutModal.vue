@@ -15,7 +15,7 @@
         </div>
 
         <button
-          @click="$emit('fechar'); fechar()"
+          @click="$emit('fechar')"
           class="w-10 h-10 rounded-full bg-zinc-100 hover:bg-zinc-200"
         >
           ✕
@@ -97,6 +97,7 @@
             <label class="text-sm font-semibold">CEP</label>
             <input
               v-model="form.cep"
+              @input="form.cep = maskCep(form.cep)"
               type="text"
               class="mt-2 w-full bg-[#fafafa] border border-zinc-200 rounded-2xl px-4 py-3 focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition"
               placeholder="00000-000"
@@ -229,7 +230,7 @@
 
 <script setup>
 import { reactive, ref, watch } from 'vue'
-import { maskTelefone } from '@/utils/formatters'
+import { maskTelefone, maskCep } from '@/utils/formatters'
 
 const props = defineProps({
   aberto: Boolean,
@@ -261,11 +262,6 @@ const step = ref(1)
 const erroNome = ref(false)
 
 const bloqueiaWatchCep = ref(false)
-
-/* trava scroll mobile */
-watch(() => props.aberto, (valor) => {
-  document.body.style.overflow = valor ? 'hidden' : ''
-})
 
 /* BUSCA CLIENTE */
 watch(() => form.whatsapp, async (novo) => {
@@ -379,9 +375,6 @@ function prevStep() {
   if (step.value > 1) step.value--
 }
 
-function fechar() {
-  document.body.style.overflow = ''
-}
 </script>
 
 <style scoped>

@@ -137,10 +137,7 @@
       </div>
 
       <!-- FOOTER -->
-      <div
-        v-if="cart.state.items.length > 0"
-        class="border-t p-5 space-y-3 bg-white"
-      >
+      <div v-if="cart.state.items.length > 0" class="border-t p-5 space-y-3 bg-white">
         <div class="flex justify-between text-sm text-zinc-500">
           <span>Subtotal</span>
           <span>R$ {{ cart.subtotal.value.toFixed(2) }}</span>
