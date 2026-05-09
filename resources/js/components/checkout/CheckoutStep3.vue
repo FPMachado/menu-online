@@ -202,18 +202,18 @@
       </div>
     </div>
 
-    <div class="flex gap-2 pt-2">
-      <button class="w-full text-sm text-zinc-500" @click="$emit('prev')">Voltar</button>
-      <button
-        v-if="
-          form.pagamento === 'Dinheiro' || (form.pagamento === 'Cartão' && tipoCartao)
-        "
-        class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg"
-        @click="$emit('confirmar')"
-      >
-        Confirmar Pedido
-      </button>
-    </div>
+        <div class="flex gap-2 pt-2">
+            <button class="w-full text-sm text-zinc-500" @click="$emit('prev')">Voltar</button>
+            <button
+                v-if="form.pagamento === 'Dinheiro' || (form.pagamento === 'Cartão' && tipoCartao)"
+                class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg disabled:opacity-60 disabled:cursor-not-allowed"
+                :disabled="carregando"
+                @click="$emit('confirmar')"
+            >
+                <span v-if="carregando">⏳ Confirmando pedido...</span>
+                <span v-else>Confirmar Pedido</span>
+            </button>
+        </div>
   </div>
 </template>
 
@@ -224,9 +224,11 @@ const props = defineProps({
   form: Object,
   total: String,
   tipoCartao: String,
+  carregando: Boolean,
 });
 
 defineEmits(["update:form", "update:tipoCartao", "prev", "confirmar"]);
+
 
 const pixCopiado = ref(false);
 const trocoPara = ref("");

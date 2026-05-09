@@ -11,10 +11,15 @@ class Endereco extends Model
 
     protected $fillable = [
         'cliente_id',
+        'cep',
         'rua',
         'numero',
-        'cidade',
         'bairro',
+        'cidade',
+        'estado',
+        'complemento',
+        'referencia',
+        'principal',
     ];
 
     public function cliente()
