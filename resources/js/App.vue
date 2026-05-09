@@ -1,11 +1,14 @@
 <template>
   <div class="min-h-screen bg-zinc-50 text-zinc-900">
-
     <!-- HEADER -->
-    <header class="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur-xl">
+    <header
+      class="sticky top-0 z-50 border-b border-zinc-200/80 bg-white/90 backdrop-blur-xl"
+    >
       <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         <div class="flex items-center gap-3">
-          <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-orange-400 text-xl text-white shadow-lg">
+          <div
+            class="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-br from-red-500 to-orange-400 text-xl text-white shadow-lg"
+          >
             🍔
           </div>
 
@@ -36,8 +39,12 @@
       <div
         class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-950 via-red-950 to-orange-500 p-6 text-white shadow-2xl md:p-10"
       >
-        <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl"></div>
-        <div class="absolute -bottom-10 left-10 h-40 w-40 rounded-full bg-orange-300/20 blur-2xl"></div>
+        <div
+          class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl"
+        ></div>
+        <div
+          class="absolute -bottom-10 left-10 h-40 w-40 rounded-full bg-orange-300/20 blur-2xl"
+        ></div>
 
         <div class="relative z-10 grid gap-8 md:grid-cols-2 md:items-center">
           <div>
@@ -52,7 +59,8 @@
             </h2>
 
             <p class="mt-4 max-w-lg text-sm text-white/85 md:text-base">
-              Mais sabor, entrega rápida e combos irresistíveis. Faça seu pedido em menos de 1 minuto.
+              Mais sabor, entrega rápida e combos irresistíveis. Faça seu pedido em menos
+              de 1 minuto.
             </p>
 
             <div class="mt-5 flex flex-wrap gap-3 text-sm">
@@ -116,7 +124,6 @@
     <!-- FILTERS -->
     <section class="mx-auto max-w-7xl px-4 pt-5 md:px-6">
       <div class="flex gap-3 overflow-x-auto pb-2">
-
         <button
           v-for="categoria in categorias"
           :key="categoria.nome"
@@ -129,7 +136,6 @@
         >
           {{ categoria.emoji }} {{ categoria.nome }}
         </button>
-
       </div>
     </section>
 
@@ -150,7 +156,6 @@
     <!-- PRODUCTS -->
     <section class="mx-auto max-w-7xl px-4 pb-32 pt-5 md:px-6">
       <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-
         <article
           v-for="item in produtos"
           :key="item.id"
@@ -180,7 +185,9 @@
                 </p>
               </div>
 
-              <span class="rounded-xl bg-amber-50 px-2 py-1 text-xs font-bold text-amber-600">
+              <span
+                class="rounded-xl bg-amber-50 px-2 py-1 text-xs font-bold text-amber-600"
+              >
                 ⭐ {{ item.rating }}
               </span>
             </div>
@@ -194,9 +201,7 @@
                 <p class="text-xs text-zinc-400 line-through">
                   R$ {{ item.precoAntigo }}
                 </p>
-                <p class="text-2xl font-black text-red-500">
-                  R$ {{ item.preco }}
-                </p>
+                <p class="text-2xl font-black text-red-500">R$ {{ item.preco }}</p>
               </div>
 
               <button
@@ -208,7 +213,6 @@
             </div>
           </div>
         </article>
-
       </div>
     </section>
 
@@ -226,85 +230,93 @@
     <div class="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-6 md:w-[360px]">
       <button
         class="flex w-full items-center justify-between rounded-3xl bg-emerald-500 px-5 py-4 text-white shadow-2xl transition hover:bg-emerald-600"
-      @click="cart.state.aberto = true">
+        @click="cart.state.aberto = true"
+      >
         <span class="font-bold">🛒 Ver Carrinho</span>
         <span class="rounded-2xl bg-white/20 px-3 py-1 text-sm font-bold">
-            {{ cart.totalItens.value }} itens
+          {{ cart.totalItens.value }} itens
         </span>
       </button>
     </div>
-
   </div>
-  <CartDrawer @checkout=" cart.state.aberto = false; checkoutAberto = true"/>
-  <CheckoutModal :aberto="checkoutAberto" :total="totalCheckout"@fechar="checkoutAberto = false"/>
+  <CartDrawer
+    @checkout="
+      cart.state.aberto = false;
+      checkoutAberto = true;
+    "
+  />
+  <CheckoutModal
+    :aberto="checkoutAberto"
+    :total="totalCheckout"
+    @fechar="checkoutAberto = false"
+  />
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import cart from './stores/cart'
-import CartDrawer from './components/CartDrawer.vue'
+import { ref, computed } from "vue";
+import cart from "./stores/cart";
+import CartDrawer from "./components/CartDrawer.vue";
 import CheckoutModal from "./components/CheckoutModal.vue";
 
-const carrinho = ref(2)
-const toast = ref('')
+const carrinho = ref(2);
+const toast = ref("");
 
 const categorias = [
-  { nome: 'Burgers', emoji: '🍔', ativa: true },
-  { nome: 'Combos', emoji: '🔥', ativa: false },
-  { nome: 'Bebidas', emoji: '🥤', ativa: false },
-  { nome: 'Sobremesas', emoji: '🍰', ativa: false },
-  { nome: 'Promoções', emoji: '💥', ativa: false }
-]
+  { nome: "Burgers", emoji: "🍔", ativa: true },
+  { nome: "Combos", emoji: "🔥", ativa: false },
+  { nome: "Bebidas", emoji: "🥤", ativa: false },
+  { nome: "Sobremesas", emoji: "🍰", ativa: false },
+  { nome: "Promoções", emoji: "💥", ativa: false },
+];
 
 const produtos = [
   {
     id: 1,
-    nome: 'Double Smash Bacon',
-    descricao: '2 carnes smash, cheddar duplo e bacon crocante',
-    preco: '29,90',
-    precoAntigo: '34,90',
-    rating: '4.9',
-    badge: 'Mais pedido',
-    imagem: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900'
+    nome: "Double Smash Bacon",
+    descricao: "2 carnes smash, cheddar duplo e bacon crocante",
+    preco: "29,90",
+    precoAntigo: "34,90",
+    rating: "4.9",
+    badge: "Mais pedido",
+    imagem: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900",
   },
   {
     id: 2,
-    nome: 'Combo Supreme',
-    descricao: 'Burger + fritas crocantes + refri gelado',
-    preco: '39,90',
-    precoAntigo: '45,90',
-    rating: '4.8',
-    badge: 'Promoção',
-    imagem: 'https://images.unsplash.com/photo-1550547660-d9450f859349?w=900'
+    nome: "Combo Supreme",
+    descricao: "Burger + fritas crocantes + refri gelado",
+    preco: "39,90",
+    precoAntigo: "45,90",
+    rating: "4.8",
+    badge: "Promoção",
+    imagem: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=900",
   },
   {
     id: 3,
-    nome: 'Milk Shake Oreo',
-    descricao: '500ml super cremoso e gelado',
-    preco: '16,90',
-    precoAntigo: '19,90',
-    rating: '4.7',
-    badge: 'Queridinho',
-    imagem: 'https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=900'
-  }
-]
+    nome: "Milk Shake Oreo",
+    descricao: "500ml super cremoso e gelado",
+    preco: "16,90",
+    precoAntigo: "19,90",
+    rating: "4.7",
+    badge: "Queridinho",
+    imagem: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=900",
+  },
+];
 
 function adicionar(item) {
-  cart.adicionar(item)
+  cart.adicionar(item);
 }
 
-const checkoutAberto = ref(false)
+const checkoutAberto = ref(false);
 
 const totalCheckout = computed(() => {
-  return (cart.subtotal.value + 6).toFixed(2)
-})
-
+  return (cart.subtotal.value + 6).toFixed(2);
+});
 </script>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: all .25s ease;
+  transition: all 0.25s ease;
 }
 
 .fade-enter-from,
