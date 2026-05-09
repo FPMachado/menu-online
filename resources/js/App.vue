@@ -123,137 +123,124 @@
 
     <!-- FILTERS -->
     <section class="mx-auto max-w-7xl px-4 pt-5 md:px-6">
-      <div class="flex gap-3 overflow-x-auto pb-2">
-        <button
-          v-for="categoria in categorias"
-          :key="categoria.nome"
-          class="whitespace-nowrap rounded-2xl border px-4 py-2 text-sm font-semibold transition"
-          :class="
-            categoria.ativa
-              ? 'border-red-500 bg-red-500 text-white shadow-lg'
-              : 'border-zinc-200 bg-white hover:bg-zinc-100'
-          "
-        >
-          {{ categoria.emoji }} {{ categoria.nome }}
-        </button>
-      </div>
-    </section>
-
-    <!-- SECTION TITLE -->
-    <section class="mx-auto max-w-7xl px-4 pt-6 md:px-6">
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 class="text-xl font-black md:text-2xl">Mais pedidos hoje</h3>
-          <p class="text-sm text-zinc-500">Os favoritos dos clientes</p>
+        <div class="flex gap-3 overflow-x-auto pb-2">
+            <button
+                v-for="categoria in categorias"
+                :key="categoria.id"
+                @click="rolarParaCategoria(categoria.id)"
+                class="whitespace-nowrap rounded-2xl border px-4 py-2 text-sm font-semibold transition border-zinc-200 bg-white hover:bg-zinc-100"
+            >
+                {{ categoria.emoji }} {{ categoria.nome }}
+            </button>
         </div>
-
-        <button class="text-sm font-semibold text-red-500 hover:underline">
-          Ver tudo
-        </button>
-      </div>
     </section>
 
     <!-- PRODUCTS -->
     <section class="mx-auto max-w-7xl px-4 pb-32 pt-5 md:px-6">
-      <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-        <article
-          v-for="item in produtos"
-          :key="item.id"
-          class="group overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+        <div
+            v-for="categoria in categorias"
+            :key="categoria.id"
+            :id="`categoria-${categoria.id}`"
+            class="mb-10"
         >
-          <div class="relative">
-            <img
-              :src="item.imagem"
-              :alt="item.nome"
-              class="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
-              loading="lazy"
-            />
-
-            <div
-              class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-zinc-800 shadow"
-            >
-              {{ item.badge }}
-            </div>
-          </div>
-
-          <div class="p-5">
-            <div class="flex items-start justify-between gap-3">
-              <div>
-                <h4 class="text-lg font-bold">{{ item.nome }}</h4>
-                <p class="mt-1 text-sm text-zinc-500">
-                  {{ item.descricao }}
-                </p>
-              </div>
-
-              <span
-                class="rounded-xl bg-amber-50 px-2 py-1 text-xs font-bold text-amber-600"
-              >
-                ⭐ {{ item.rating }}
-              </span>
+            <!-- TÍTULO DA CATEGORIA -->
+            <div class="flex items-center justify-between mb-5">
+                <div>
+                    <h3 class="text-xl font-black md:text-2xl">
+                        {{ categoria.emoji }} {{ categoria.nome }}
+                    </h3>
+                    <p class="text-sm text-zinc-500">
+                        {{ categoria.produtos.length }} itens
+                    </p>
+                </div>
             </div>
 
-            <div class="mt-4 rounded-2xl bg-zinc-50 p-3 text-sm text-zinc-600">
-              💡 Adicione batata por apenas <strong>+R$ 5</strong>
-            </div>
+            <!-- PRODUTOS DA CATEGORIA -->
+            <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
+                <article
+                    v-for="item in categoria.produtos"
+                    :key="item.id"
+                    class="group overflow-hidden rounded-3xl border border-zinc-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl"
+                >
+                    <div class="relative">
+                        <img
+                            :src="item.imagem"
+                            :alt="item.nome"
+                            class="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+                            loading="lazy"
+                        />
 
-            <div class="mt-5 flex items-center justify-between">
-              <div>
-                <p class="text-xs text-zinc-400 line-through">
-                  R$ {{ item.precoAntigo }}
-                </p>
-                <p class="text-2xl font-black text-red-500">R$ {{ item.preco }}</p>
-              </div>
+                        <div
+                            v-if="item.badge"
+                            class="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-bold text-zinc-800 shadow"
+                        >
+                            {{ item.badge }}
+                        </div>
+                    </div>
 
-              <button
-                @click="adicionar(item)"
-                class="rounded-2xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-[1.03] hover:bg-red-600 active:scale-95"
-              >
-                Adicionar
-              </button>
+                    <div class="p-5">
+                        <h4 class="text-lg font-bold">{{ item.nome }}</h4>
+                        <p class="mt-1 text-sm text-zinc-500">{{ item.descricao }}</p>
+
+                        <div class="mt-5 flex items-center justify-between">
+                            <div>
+                                <p v-if="item.preco_antigo" class="text-xs text-zinc-400 line-through">
+                                    R$ {{ item.preco_antigo }}
+                                </p>
+                                <p class="text-2xl font-black text-red-500">R$ {{ item.preco }}</p>
+                            </div>
+
+                            <button
+                                @click="adicionar(item)"
+                                class="rounded-2xl bg-red-500 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:scale-[1.03] hover:bg-red-600 active:scale-95"
+                            >
+                                Adicionar
+                            </button>
+                        </div>
+                    </div>
+                </article>
             </div>
-          </div>
-        </article>
-      </div>
+        </div>
     </section>
 
     <!-- TOAST -->
     <transition name="fade">
-      <div
+        <div
         v-if="toast"
         class="fixed left-1/2 top-5 z-[60] -translate-x-1/2 rounded-2xl bg-zinc-950 px-5 py-3 text-sm font-semibold text-white shadow-2xl"
-      >
+        >
         {{ toast }}
-      </div>
+        </div>
     </transition>
 
     <!-- CART -->
     <div class="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-6 md:w-[360px]">
-      <button
+        <button
         class="flex w-full items-center justify-between rounded-3xl bg-emerald-500 px-5 py-4 text-white shadow-2xl transition hover:bg-emerald-600"
         @click="cart.state.aberto = true"
-      >
+        >
         <span class="font-bold">🛒 Ver Carrinho</span>
         <span class="rounded-2xl bg-white/20 px-3 py-1 text-sm font-bold">
-          {{ cart.totalItens.value }} itens
+            {{ cart.totalItens.value }} itens
         </span>
-      </button>
+        </button>
     </div>
-  </div>
-  <CartDrawer
+    </div>
+    <CartDrawer
     @checkout="
-      cart.state.aberto = false;
-      checkoutAberto = true;
+        cart.state.aberto = false;
+        checkoutAberto = true;
     "
-  />
-  <CheckoutModal
+    />
+    <CheckoutModal
     :aberto="checkoutAberto"
     :total="totalCheckout"
     @fechar="checkoutAberto = false"
-  />
+    />
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from 'vue'
 import cart from "./stores/cart";
 import CartDrawer from "./components/CartDrawer.vue";
 import CheckoutModal from "./components/CheckoutModal.vue";
@@ -261,67 +248,48 @@ import CheckoutModal from "./components/CheckoutModal.vue";
 const carrinho = ref(2);
 const toast = ref("");
 
-const categorias = [
-  { nome: "Burgers", emoji: "🍔", ativa: true },
-  { nome: "Combos", emoji: "🔥", ativa: false },
-  { nome: "Bebidas", emoji: "🥤", ativa: false },
-  { nome: "Sobremesas", emoji: "🍰", ativa: false },
-  { nome: "Promoções", emoji: "💥", ativa: false },
-];
-
-const produtos = [
-  {
-    id: 1,
-    nome: "Double Smash Bacon",
-    descricao: "2 carnes smash, cheddar duplo e bacon crocante",
-    preco: "29,90",
-    precoAntigo: "34,90",
-    rating: "4.9",
-    badge: "Mais pedido",
-    imagem: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900",
-  },
-  {
-    id: 2,
-    nome: "Combo Supreme",
-    descricao: "Burger + fritas crocantes + refri gelado",
-    preco: "39,90",
-    precoAntigo: "45,90",
-    rating: "4.8",
-    badge: "Promoção",
-    imagem: "https://images.unsplash.com/photo-1550547660-d9450f859349?w=900",
-  },
-  {
-    id: 3,
-    nome: "Milk Shake Oreo",
-    descricao: "500ml super cremoso e gelado",
-    preco: "16,90",
-    precoAntigo: "19,90",
-    rating: "4.7",
-    badge: "Queridinho",
-    imagem: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=900",
-  },
-];
+const categorias = ref([])
+const produtos = ref([])
+const categoriaAtiva = ref(null)
 
 function adicionar(item) {
-  cart.adicionar(item);
+    cart.adicionar(item);
 }
 
 const checkoutAberto = ref(false);
 
 const totalCheckout = computed(() => {
-  return (cart.subtotal.value + 6).toFixed(2);
+    return (cart.subtotal.value + 6).toFixed(2);
 });
+
+onMounted(async () => {
+    const res = await fetch('/api/cardapio')
+    const data = await res.json()
+
+    categorias.value = data.categorias ?? []
+    produtos.value = categorias.value.flatMap(c => c.produtos)
+
+    if (categorias.value.length > 0) {
+        categoriaAtiva.value = categorias.value[0].id
+    }
+})
+
+function rolarParaCategoria(id) {
+    const el = document.getElementById(`categoria-${id}`)
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
 </script>
 
 <style scoped>
 .fade-enter-active,
 .fade-leave-active {
-  transition: all 0.25s ease;
+    transition: all 0.25s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
-  opacity: 0;
-  transform: translate(-50%, -10px);
+    opacity: 0;
+    transform: translate(-50%, -10px);
 }
 </style>
