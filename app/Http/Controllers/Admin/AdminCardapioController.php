@@ -132,4 +132,14 @@ class AdminCardapioController extends Controller
 
         return response()->json(['success' => true]);
     }
+
+    public function toggleEsgotado(Produto $produto)
+    {
+        $produto->update(['esgotado' => !$produto->esgotado]);
+
+        return response()->json([
+            'success' => true,
+            'produto' => $produto,
+        ]);
+    }
 }

@@ -45,6 +45,18 @@
         </div>
         @endif
 
+        @if($pedido->itens->count() > 0)
+            <div class="info-box">
+                <p style="font-size: 13px; font-weight: 700; margin-bottom: 12px;">Itens do pedido</p>
+                @foreach($pedido->itens as $item)
+                <div class="info-row">
+                    <span>{{ $item->quantidade }}x {{ $item->nome }}</span>
+                    <span>R$ {{ number_format($item->subtotal, 2, ',', '.') }}</span>
+                </div>
+                @endforeach
+            </div>
+        @endif
+
         <div class="total-box">
             <span>Total do pedido</span>
             <span>R$ {{ number_format($pedido->total, 2, ',', '.') }}</span>

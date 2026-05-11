@@ -19,6 +19,7 @@ class Produto extends Model
         'badge',
         'ativo',
         'ordem',
+        'esgotado',
     ];
 
     public function categoria()

@@ -98,7 +98,7 @@
       <div class="bg-white border border-green-200 rounded-2xl p-3">
         <p class="text-xs text-zinc-500 mb-1">Chave PIX</p>
         <div class="flex items-center justify-between gap-2">
-          <p class="text-sm font-mono font-bold truncate">exemplo@burguerhouse.com</p>
+            <p class="text-sm font-mono font-bold truncate">{{ props.configuracao?.chave_pix || 'Chave PIX não configurada' }}</p>
           <button
             @click="copiarPix"
             class="text-xs bg-green-500 text-white px-3 py-1.5 rounded-xl font-semibold shrink-0"
@@ -186,21 +186,21 @@
       </p>
     </div>
 
-    <!-- TOTAL -->
-    <div class="bg-zinc-50 border border-zinc-200 p-4 rounded-2xl">
-      <div class="flex justify-between text-sm text-zinc-500 mb-1">
-        <span>Subtotal</span>
-        <span>R$ {{ (parseFloat(total) - 6).toFixed(2) }}</span>
-      </div>
-      <div class="flex justify-between text-sm text-zinc-500 mb-2">
-        <span>Entrega</span>
-        <span>R$ 6,00</span>
-      </div>
-      <div class="flex justify-between font-black text-lg">
-        <span>Total</span>
-        <span class="text-green-600">R$ {{ total }}</span>
-      </div>
-    </div>
+        <!-- TOTAL -->
+        <div class="bg-zinc-50 border border-zinc-200 p-4 rounded-2xl">
+            <div class="flex justify-between text-sm text-zinc-500 mb-1">
+                <span>Subtotal</span>
+                <span>R$ {{ (parseFloat(total) - parseFloat(props.configuracao?.taxa_entrega || 0)).toFixed(2) }}</span>
+            </div>
+            <div class="flex justify-between text-sm text-zinc-500 mb-2">
+                <span>Entrega</span>
+                <span>{{ props.configuracao?.taxa_entrega > 0 ? `R$ ${parseFloat(props.configuracao.taxa_entrega).toFixed(2)}` : 'Grátis' }}</span>
+            </div>
+            <div class="flex justify-between font-black text-lg">
+                <span>Total</span>
+                <span class="text-green-600">R$ {{ total }}</span>
+            </div>
+        </div>
 
         <div class="flex gap-2 pt-2">
             <button class="w-full text-sm text-zinc-500" @click="$emit('prev')">Voltar</button>
@@ -221,14 +221,14 @@
 import { ref, computed } from "vue";
 
 const props = defineProps({
-  form: Object,
-  total: String,
-  tipoCartao: String,
-  carregando: Boolean,
+    form: Object,
+    total: String,
+    tipoCartao: String,
+    carregando: Boolean,
+    configuracao: Object,
 });
 
 defineEmits(["update:form", "update:tipoCartao", "prev", "confirmar"]);
-
 
 const pixCopiado = ref(false);
 const trocoPara = ref("");
@@ -241,7 +241,7 @@ const troco = computed(() => {
 });
 
 function copiarPix() {
-  const texto = "exemplo@burguerhouse.com";
+    const texto = props.configuracao?.chave_pix || 'chave pix não configurada'
   if (navigator.clipboard) {
     navigator.clipboard.writeText(texto);
   } else {

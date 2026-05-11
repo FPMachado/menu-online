@@ -10,7 +10,7 @@ class AdminPedidoController extends Controller
 {
     public function index()
     {
-        $pedidos = Pedido::with('cliente', 'endereco')
+        $pedidos = Pedido::with('cliente', 'endereco', 'itens')
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -22,7 +22,7 @@ class AdminPedidoController extends Controller
     public function atualizarStatus(Request $request, Pedido $pedido)
     {
         $request->validate([
-            'status' => 'required|in:pendente,confirmado,entregue,cancelado',
+            'status' => 'required|in:pendente,confirmado,em_entrega,pronto,entregue,cancelado',
         ]);
 
         $pedido->update(['status' => $request->status]);

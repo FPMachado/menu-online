@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\AdminPedidoController;
 use App\Http\Controllers\Admin\AdminCardapioController;
+use App\Http\Controllers\Admin\AdminConfiguracaoController;
+use App\Http\Controllers\Admin\UploadController;
 
 Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
 
@@ -21,4 +23,12 @@ Route::middleware('auth:sanctum')->prefix('admin')->group(function () {
     Route::post('/produtos', [AdminCardapioController::class, 'storeProduto']);
     Route::put('/produtos/{produto}', [AdminCardapioController::class, 'updateProduto']);
     Route::delete('/produtos/{produto}', [AdminCardapioController::class, 'destroyProduto']);
+
+    //CONFIGURACOES
+    Route::get('/configuracoes', [AdminConfiguracaoController::class, 'index']);
+    Route::put('/configuracoes', [AdminConfiguracaoController::class, 'update']);
+
+    Route::post('/upload', [UploadController::class, 'store']);
+
+    Route::patch('/produtos/{produto}/esgotado', [AdminCardapioController::class, 'toggleEsgotado']);
 });

@@ -136,33 +136,32 @@
 
       </div>
 
-      <!-- FOOTER -->
-      <div v-if="cart.state.items.length > 0" class="border-t p-5 space-y-3 bg-white">
-        <div class="flex justify-between text-sm text-zinc-500">
-          <span>Subtotal</span>
-          <span>R$ {{ cart.subtotal.value.toFixed(2) }}</span>
+        <!-- FOOTER -->
+        <div v-if="cart.state.items.length > 0" class="border-t p-5 space-y-3 bg-white">
+            <div class="flex justify-between text-sm text-zinc-500">
+                <span>Subtotal</span>
+                <span>R$ {{ cart.subtotal.value.toFixed(2) }}</span>
+            </div>
+
+            <div class="flex justify-between text-sm text-zinc-500">
+                <span>Entrega</span>
+                <span>{{ props.taxaEntrega > 0 ? `R$ ${props.taxaEntrega.toFixed(2)}` : 'Grátis' }}</span>
+            </div>
+
+            <div class="flex justify-between text-xl font-black">
+                <span>Total</span>
+                <span class="text-green-600">
+                    R$ {{ (cart.subtotal.value + props.taxaEntrega).toFixed(2) }}
+                </span>
+            </div>
+
+            <button
+                @click="$emit('checkout')"
+                class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl"
+            >
+                Finalizar Pedido • R$ {{ (cart.subtotal.value + props.taxaEntrega).toFixed(2) }}
+            </button>
         </div>
-
-        <div class="flex justify-between text-sm text-zinc-500">
-          <span>Entrega</span>
-          <span>R$ 6,00</span>
-        </div>
-
-        <div class="flex justify-between text-xl font-black">
-          <span>Total</span>
-          <span class="text-green-600">
-            R$ {{ (cart.subtotal.value + 6).toFixed(2) }}
-          </span>
-        </div>
-
-        <button
-        @click="$emit('checkout')"
-        class="w-full bg-green-500 hover:bg-green-600 text-white py-4 rounded-2xl font-bold text-lg shadow-xl"
-        >
-        Finalizar Pedido • R$ {{ (cart.subtotal.value + 6).toFixed(2) }}
-        </button>
-
-      </div>
 
     </div>
   </div>
@@ -170,6 +169,13 @@
 
 <script setup>
 import cart from '../stores/cart'
+
+const props = defineProps({
+    taxaEntrega: {
+        type: Number,
+        default: 0
+    }
+})
 
 defineEmits(['checkout'])
 </script>

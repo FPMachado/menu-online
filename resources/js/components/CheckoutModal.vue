@@ -57,7 +57,8 @@
                 :form="form"
                 :total="total"
                 :tipoCartao="tipoCartao"
-                :carregando="carregando"
+                :tipoEntrega="tipoEntrega"
+                :configuracao="props.configuracao"
                 @update:form="form = $event"
                 @update:tipoCartao="tipoCartao = $event"
                 @prev="prevStep"
@@ -74,11 +75,13 @@ import CheckoutStep1 from "./checkout/CheckoutStep1.vue";
 import CheckoutStep2 from "./checkout/CheckoutStep2.vue";
 import CheckoutStep3 from "./checkout/CheckoutStep3.vue";
 import CheckoutSucesso from "./checkout/CheckoutSucesso.vue";
+import cart from '../stores/cart'
 
 const props = defineProps({
     aberto: Boolean,
     total: String,
-});
+    configuracao: Object,
+})
 
 defineEmits(["fechar"]);
 
@@ -276,6 +279,13 @@ async function confirmarPedido() {
                 total: props.total,
                 tipo_entrega: tipoEntrega.value,
                 status: "pendente",
+                itens: cart.state.items.map(item => ({
+                    produto_id: item.id,
+                    nome: item.nome,
+                    preco: parseFloat(item.preco.replace(',', '.')),
+                    quantidade: item.qtd,
+                    subtotal: parseFloat(item.preco.replace(',', '.')) * item.qtd,
+                })),
             }),
         });
 

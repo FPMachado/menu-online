@@ -29,4 +29,9 @@ class Pedido extends Model
     {
         return $this->belongsTo(Endereco::class);
     }
+
+    public function itens()
+    {
+        return $this->hasMany(PedidoItem::class);
+    }
 }

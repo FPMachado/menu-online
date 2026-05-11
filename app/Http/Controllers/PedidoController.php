@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\PedidoConfirmadoCliente;
 use App\Mail\PedidoConfirmadoRestaurante;
 use App\Models\Pedido;
+use App\Models\PedidoItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,6 +19,12 @@ class PedidoController extends Controller
             'total'        => 'required',
             'tipo_entrega' => 'required|in:entrega,retirada,local',
             'endereco_id'  => 'required_if:tipo_entrega,entrega',
+            'itens'        => 'required|array|min:1',
+            'itens.*.produto_id' => 'required|exists:produtos,id',
+            'itens.*.nome'       => 'required|string',
+            'itens.*.preco'      => 'required|numeric',
+            'itens.*.quantidade' => 'required|integer|min:1',
+            'itens.*.subtotal'   => 'required|numeric',
         ]);
 
         $pedido = Pedido::create([
@@ -29,7 +36,18 @@ class PedidoController extends Controller
             'status'       => 'pendente',
         ]);
 
-        $pedido->load('cliente', 'endereco');
+        foreach ($request->itens as $item) {
+            PedidoItem::create([
+                'pedido_id'  => $pedido->id,
+                'produto_id' => $item['produto_id'],
+                'nome'       => $item['nome'],
+                'preco'      => $item['preco'],
+                'quantidade' => $item['quantidade'],
+                'subtotal'   => $item['subtotal'],
+            ]);
+        }
+
+        $pedido->load('cliente', 'endereco', 'itens');
 
         Mail::to($pedido->cliente->email ?? 'cliente@teste.com')
             ->send(new PedidoConfirmadoCliente($pedido));

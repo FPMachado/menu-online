@@ -94,13 +94,27 @@
                                     <span v-if="produto.badge" class="text-xs bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full font-semibold">{{ produto.badge }}</span>
                                 </div>
                             </div>
-                            <div class="flex gap-2">
+
+                            <div class="flex items-center gap-3">
+                                <button
+                                    @click="toggleEsgotado(produto)"
+                                    :title="produto.esgotado ? 'Clique para marcar como disponível' : 'Clique para marcar como esgotado'"
+                                    class="w-8 h-4 rounded-full transition relative shrink-0"
+                                    :class="produto.esgotado ? 'bg-red-400' : 'bg-emerald-400'"
+                                >
+                                    <div
+                                        class="w-3 h-3 bg-white rounded-full shadow absolute top-0.5 transition-transform"
+                                        :class="produto.esgotado ? 'translate-x-0.5' : 'translate-x-4'"
+                                    ></div>
+                                </button>
+
                                 <button
                                     @click="abrirModalProduto(produto)"
                                     class="text-xs text-zinc-400 hover:text-zinc-700"
                                 >
                                     ✏️
                                 </button>
+
                                 <button
                                     @click="deletarProduto(produto.id)"
                                     class="text-xs text-zinc-400 hover:text-red-500"
@@ -229,13 +243,47 @@
                 </div>
 
                 <div>
-                    <label class="text-sm font-semibold">URL da imagem</label>
-                    <input
-                        v-model="formProduto.imagem"
-                        type="text"
-                        placeholder="https://..."
-                        class="mt-2 w-full bg-[#fafafa] border border-zinc-200 rounded-2xl px-4 py-3 outline-none focus:border-red-400 transition"
-                    />
+                    <label class="text-sm font-semibold">Imagem do produto</label>
+
+                    <div class="mt-2 space-y-3">
+                        <div
+                            v-if="formProduto.imagem"
+                            class="relative w-full h-40 rounded-2xl overflow-hidden border border-zinc-200"
+                        >
+                            <img
+                                :src="formProduto.imagem"
+                                class="w-full h-full object-cover"
+                            />
+                            <button
+                                @click="formProduto.imagem = ''"
+                                class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full text-xs font-bold"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <div
+                            v-else
+                            @click="$refs.inputImagem.click()"
+                            class="w-full h-40 border-2 border-dashed border-zinc-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-red-400 hover:bg-red-50 transition"
+                        >
+                            <span class="text-3xl mb-2">📷</span>
+                            <p class="text-sm font-semibold text-zinc-500">Clique para fazer upload</p>
+                            <p class="text-xs text-zinc-400 mt-1">PNG, JPG ou WEBP até 2MB</p>
+                        </div>
+
+                        <input
+                            ref="inputImagem"
+                            type="file"
+                            accept="image/*"
+                            class="hidden"
+                            @change="uploadImagem"
+                        />
+
+                        <div v-if="uploadando" class="text-center text-sm text-zinc-500">
+                            ⏳ Enviando imagem...
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex gap-2 pt-2">
@@ -266,15 +314,14 @@ const produtos = ref([])
 const categoriaSelecionada = ref(null)
 const modalCategoria = ref(false)
 const modalProduto = ref(false)
-
+const inputImagem = ref(null)
+const uploadando = ref(false)
 const formCategoria = ref({ id: null, nome: '', emoji: '' })
 const formProduto = ref({ id: null, nome: '', descricao: '', preco: '', preco_antigo: '', badge: '', imagem: '' })
-
 const produtosFiltrados = computed(() => {
     if (!categoriaSelecionada.value) return []
     return produtos.value.filter(p => p.categoria_id === categoriaSelecionada.value.id)
 })
-
 const token = localStorage.getItem('admin_token')
 const headers = {
     'Authorization': `Bearer ${token}`,
@@ -364,5 +411,43 @@ async function deletarProduto(id) {
 
     await fetch(`/api/admin/produtos/${id}`, { method: 'DELETE', headers })
     await carregarProdutos()
+}
+
+async function uploadImagem(event) {
+    const file = event.target.files[0]
+    if (!file) return
+
+    uploadando.value = true
+
+    const formData = new FormData()
+    formData.append('imagem', file)
+
+    const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+        },
+        body: formData,
+    })
+
+    const data = await res.json()
+
+    if (data.success) {
+        formProduto.value.imagem = data.url
+    }
+
+    uploadando.value = false
+}
+
+async function toggleEsgotado(produto) {
+    const res = await fetch(`/api/admin/produtos/${produto.id}/esgotado`, {
+        method: 'PATCH',
+        headers,
+    })
+
+    if (res.ok) {
+        produto.esgotado = !produto.esgotado
+    }
 }
 </script>
