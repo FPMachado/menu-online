@@ -237,6 +237,20 @@
             </div>
         </transition>
 
+        <!-- VER PEDIDO ATIVO -->
+        <div
+            v-if="pedidoAtivoId"
+            class="fixed bottom-20 left-4 right-4 z-50 md:left-auto md:right-6 md:w-[360px]"
+        >
+            <button
+                @click="acompanhamentoAberto = true"
+                class="flex w-full items-center justify-between rounded-3xl bg-red-500 px-5 py-3 text-white shadow-2xl transition hover:bg-red-600"
+            >
+                <span class="font-bold">📦 Ver meu pedido</span>
+                <span class="rounded-2xl bg-white/20 px-3 py-1 text-sm font-bold">#{{ pedidoAtivoId }}</span>
+            </button>
+        </div>
+
         <!-- CART -->
         <div class="fixed bottom-4 left-4 right-4 z-50 md:left-auto md:right-6 md:w-[360px]">
             <button
@@ -251,15 +265,25 @@
             </button>
         </div>
     </div>
+
     <CartDrawer
         :taxaEntrega="parseFloat(configuracao.taxa_entrega || 0)"
         @checkout="cart.state.aberto = false; checkoutAberto = true"
     />
+
     <CheckoutModal
         :aberto="checkoutAberto"
         :total="totalCheckout"
         :configuracao="configuracao"
         @fechar="checkoutAberto = false"
+        @pedidoCriado="(id) => { pedidoAtivoId = id; checkoutAberto = false }"
+    />
+
+    <AcompanhamentoPedido
+        v-if="acompanhamentoAberto && pedidoAtivoId"
+        :pedidoId="pedidoAtivoId"
+        @fechar="acompanhamentoAberto = false"
+        @pedidoFinalizado="pedidoAtivoId = null; localStorage.removeItem('pedido_ativo_id'); acompanhamentoAberto = false"
     />
 </template>
 
@@ -268,6 +292,7 @@ import { ref, computed, onMounted } from 'vue'
 import cart from "./stores/cart";
 import CartDrawer from "./components/CartDrawer.vue";
 import CheckoutModal from "./components/CheckoutModal.vue";
+import AcompanhamentoPedido from './components/AcompanhamentoPedido.vue'
 
 const toast = ref("");
 const categorias = ref([])
@@ -303,6 +328,9 @@ const categoriasFiltradas = computed(() => {
         }))
         .filter(categoria => categoria.produtos.length > 0)
 })
+
+const pedidoAtivoId = ref(parseInt(localStorage.getItem('pedido_ativo_id')) || null)
+const acompanhamentoAberto = ref(false)
 
 function adicionar(item) {
     cart.adicionar(item)
@@ -349,7 +377,20 @@ onMounted(async () => {
         configuracao.value = dataConfig.configuracao
         verificarHorario()
     }
+
+    // Verificar se pedido ativo ainda está em andamento
+    if (pedidoAtivoId.value) {
+        const resPedido = await fetch(`/api/pedidos/${pedidoAtivoId.value}/status`)
+        const dataPedido = await resPedido.json()
+
+        if (dataPedido.pedido?.status === 'entregue' || dataPedido.pedido?.status === 'cancelado') {
+            pedidoAtivoId.value = null
+            localStorage.removeItem('pedido_ativo_id')
+        }
+    }
 })
+
+
 </script>
 
 <style scoped>

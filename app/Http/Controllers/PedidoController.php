@@ -60,4 +60,20 @@ class PedidoController extends Controller
             'pedido'  => $pedido,
         ]);
     }
+
+    public function status(int $id)
+    {
+        $pedido = Pedido::with('cliente', 'itens')->findOrFail($id);
+
+        return response()->json([
+            'pedido' => [
+                'id'           => $pedido->id,
+                'status'       => $pedido->status,
+                'tipo_entrega' => $pedido->tipo_entrega,
+                'pagamento'    => $pedido->pagamento,
+                'total'        => $pedido->total,
+                'itens'        => $pedido->itens,
+            ]
+        ]);
+    }
 }

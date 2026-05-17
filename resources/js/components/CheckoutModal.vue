@@ -27,7 +27,7 @@
             <CheckoutSucesso
                 v-if="pedidoConfirmado"
                 :pedido="pedidoConfirmado"
-                @fechar="$emit('fechar')"
+                @fechar="resetar(); $emit('fechar')"
             />
 
             <CheckoutStep1
@@ -83,7 +83,7 @@ const props = defineProps({
     configuracao: Object,
 })
 
-defineEmits(["fechar"]);
+const emit = defineEmits(['fechar', 'pedidoCriado'])
 
 const form = ref({
     whatsapp: "",
@@ -292,7 +292,9 @@ async function confirmarPedido() {
         const dataPedido = await resPedido.json();
 
         if (dataPedido.success) {
-            pedidoConfirmado.value = dataPedido.pedido;
+            pedidoConfirmado.value = dataPedido.pedido
+            localStorage.setItem('pedido_ativo_id', dataPedido.pedido.id)
+            emit('pedidoCriado', dataPedido.pedido.id)
         }
     } catch (err) {
         console.error("Erro ao confirmar pedido:", err);
@@ -300,26 +302,47 @@ async function confirmarPedido() {
         carregando.value = false;
     }
 }
+
+function resetar() {
+    pedidoConfirmado.value = null
+    step.value = 1
+    tipoEntrega.value = null
+    tipoCartao.value = null
+    enderecoSelecionado.value = null
+    form.value = {
+        whatsapp: '',
+        nome: '',
+        cep: '',
+        rua: '',
+        numero: '',
+        bairro: '',
+        cidade: '',
+        complemento: '',
+        referencia: '',
+        pagamento: 'Pix',
+        obs: '',
+    }
+}
 </script>
 
 <style scoped>
 @keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-4px);
-  }
-  50% {
-    transform: translateX(4px);
-  }
-  75% {
-    transform: translateX(-4px);
-  }
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-4px);
+    }
+    50% {
+        transform: translateX(4px);
+    }
+    75% {
+        transform: translateX(-4px);
+    }
 }
 
 .shake {
-  animation: shake 0.25s ease;
+    animation: shake 0.25s ease;
 }
 </style>

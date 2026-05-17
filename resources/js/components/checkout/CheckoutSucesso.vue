@@ -44,7 +44,7 @@
 
 <script setup>
 defineProps({
-  pedido: Object
+    pedido: Object
 })
 
 defineEmits(['fechar'])
