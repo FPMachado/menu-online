@@ -146,6 +146,62 @@
                 </button>
             </div>
 
+            <!-- HERO -->
+            <div>
+                <label class="text-sm font-semibold">Slogan do restaurante</label>
+                <input
+                    v-model="form.slogan"
+                    type="text"
+                    placeholder="Ex: Burgers artesanais entregues quentinhos na sua porta."
+                    class="mt-2 w-full bg-[#fafafa] border border-zinc-200 rounded-2xl px-4 py-3 focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition"
+                />
+            </div>
+
+            <div>
+                <label class="text-sm font-semibold">Descrição</label>
+                <textarea
+                    v-model="form.descricao"
+                    placeholder="Ex: Mais sabor, entrega rápida e combos irresistíveis."
+                    rows="2"
+                    class="mt-2 w-full bg-[#fafafa] border border-zinc-200 rounded-2xl px-4 py-3 focus:border-red-400 focus:ring-2 focus:ring-red-100 outline-none transition resize-none"
+                />
+            </div>
+
+            <div>
+                <label class="text-sm font-semibold">Imagem do hero</label>
+                <div class="mt-2 space-y-3">
+                    <div
+                        v-if="form.imagem_hero"
+                        class="relative w-full h-40 rounded-2xl overflow-hidden border border-zinc-200"
+                    >
+                        <img :src="form.imagem_hero" class="w-full h-full object-cover" />
+                        <button
+                            @click="form.imagem_hero = ''"
+                            class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full text-xs font-bold"
+                        >
+                            ✕
+                        </button>
+                    </div>
+
+                    <div
+                        v-else
+                        @click="$refs.inputHero.click()"
+                        class="w-full h-40 border-2 border-dashed border-zinc-300 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-red-400 hover:bg-red-50 transition"
+                    >
+                        <span class="text-3xl mb-2">🖼️</span>
+                        <p class="text-sm font-semibold text-zinc-500">Clique para fazer upload</p>
+                    </div>
+
+                    <input
+                        ref="inputHero"
+                        type="file"
+                        accept="image/*"
+                        class="hidden"
+                        @change="uploadHero"
+                    />
+                </div>
+            </div>
+
             <!-- BOTÃO SALVAR -->
             <button
                 @click="salvar"
@@ -179,6 +235,9 @@ const form = ref({
     horario_abertura: '08:00',
     horario_fechamento: '22:00',
     tempo_entrega: '30-45 min',
+    slogan: '',
+    descricao: '',
+    imagem_hero: '',
 })
 
 const token = localStorage.getItem('admin_token')
@@ -236,6 +295,33 @@ async function uploadLogo(event) {
 
     if (data.success) {
         form.value.logo = data.url
+    }
+
+    uploadando.value = false
+}
+
+async function uploadHero(event) {
+    const file = event.target.files[0]
+    if (!file) return
+
+    uploadando.value = true
+
+    const formData = new FormData()
+    formData.append('imagem', file)
+
+    const res = await fetch('/api/admin/upload', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+        },
+        body: formData,
+    })
+
+    const data = await res.json()
+
+    if (data.success) {
+        form.value.imagem_hero = data.url
     }
 
     uploadando.value = false

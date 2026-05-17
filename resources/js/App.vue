@@ -36,53 +36,38 @@
 
         <!-- HERO -->
         <section class="mx-auto max-w-7xl px-4 pt-5 md:px-6 md:pt-8">
-            <div
-            class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-950 via-red-950 to-orange-500 p-6 text-white shadow-2xl md:p-10"
-            >
-                <div
-                class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl"
-                ></div>
-                <div
-                class="absolute -bottom-10 left-10 h-40 w-40 rounded-full bg-orange-300/20 blur-2xl"
-                ></div>
+            <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-zinc-950 via-red-950 to-orange-500 p-6 text-white shadow-2xl md:p-10">
+                <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-2xl"></div>
+                <div class="absolute -bottom-10 left-10 h-40 w-40 rounded-full bg-orange-300/20 blur-2xl"></div>
 
                 <div class="relative z-10 grid gap-8 md:grid-cols-2 md:items-center">
                     <div>
-                        <div
-                        class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur"
-                        >
-                        🔥 Alta demanda hoje
+                        <div class="mb-4 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-semibold backdrop-blur">
+                            🔥 Alta demanda hoje
                         </div>
 
                         <h2 class="max-w-xl text-3xl font-black leading-tight md:text-5xl">
-                            Burgers artesanais entregues quentinhos na sua porta.
+                            {{ configuracao.slogan || 'Peça agora e receba rapidinho!' }}
                         </h2>
 
                         <p class="mt-4 max-w-lg text-sm text-white/85 md:text-base">
-                            Mais sabor, entrega rápida e combos irresistíveis. Faça seu pedido em menos
-                            de 1 minuto.
+                            {{ configuracao.descricao || 'Os melhores sabores entregues na sua porta.' }}
                         </p>
 
                         <div class="mt-5 flex flex-wrap gap-3 text-sm">
                             <div class="rounded-2xl bg-white/10 px-4 py-2 backdrop-blur">
                                 ⭐ 4.8 (2.341 avaliações)
                             </div>
-
                             <div class="rounded-2xl bg-white/10 px-4 py-2 backdrop-blur">
                                 🚀 +12 mil pedidos entregues
                             </div>
                         </div>
 
                         <div class="mt-6 flex flex-col gap-3 sm:flex-row">
-                            <button
-                                class="rounded-2xl bg-white px-6 py-4 text-sm font-bold text-red-500 shadow-xl transition hover:scale-[1.02]"
-                            >
+                            <button class="rounded-2xl bg-white px-6 py-4 text-sm font-bold text-red-500 shadow-xl transition hover:scale-[1.02]">
                                 Pedir Agora
                             </button>
-
-                            <button
-                                class="rounded-2xl border border-white/20 px-6 py-4 text-sm font-semibold transition hover:bg-white/10"
-                            >
+                            <button class="rounded-2xl border border-white/20 px-6 py-4 text-sm font-semibold transition hover:bg-white/10">
                                 Ver Promoções
                             </button>
                         </div>
@@ -90,10 +75,10 @@
 
                     <div class="hidden md:flex justify-end">
                         <img
-                        src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900"
-                        alt="Burger destaque"
-                        class="h-[340px] w-[340px] rounded-3xl object-cover shadow-2xl"
-                        loading="lazy"
+                            :src="configuracao.imagem_hero || 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=900'"
+                            alt="Imagem destaque"
+                            class="h-[340px] w-[340px] rounded-3xl object-cover shadow-2xl"
+                            loading="lazy"
                         />
                     </div>
                 </div>
@@ -355,7 +340,13 @@ function verificarHorario() {
     const abertura = hAbertura * 60 + mAbertura
     const fechamento = hFechamento * 60 + mFechamento
 
-    configuracao.value.aberto = horaAtual >= abertura && horaAtual < fechamento
+    if (fechamento > abertura) {
+        // Horário normal: ex 08:00 às 22:00
+        configuracao.value.aberto = horaAtual >= abertura && horaAtual < fechamento
+    } else {
+        // Horário que passa da meia-noite: ex 18:00 às 02:00
+        configuracao.value.aberto = horaAtual >= abertura || horaAtual < fechamento
+    }
 }
 
 onMounted(async () => {

@@ -21,6 +21,9 @@ class Configuracao extends Model
         'horario_abertura',
         'horario_fechamento',
         'tempo_entrega',
+        'slogan',
+        'descricao',
+        'imagem_hero',
     ];
 
     protected $casts = [
